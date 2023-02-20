@@ -3,23 +3,28 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class StepTracker {
-    static int targetSteps = 10_000;
-    static Scanner scanner = new Scanner(System.in);
-    MonthData[] monthToData = new MonthData[12];
-    static boolean work = true;
+    private static int targetSteps = 10_000;
+    private static Scanner scanner = new Scanner(System.in);
+    private static Random random = new Random();
+    private MonthData[] monthToData = new MonthData[12];
+
+    class MonthData {
+        int[] stepsByDays = new int[30];
+    }
 
     public void start() {
+        boolean work = true;
         for (int i = 0; i < monthToData.length; i++) {
             monthToData[i] = new MonthData();
         }
         while (work) {
             printMainMenu();
-            switch (scanner.nextInt()) {
-                case 1 -> enterNumberOfStepsPerDay();
-                case 2 -> statistics();
-                case 3 -> setTargetSteps();
-                case 0 -> work = false;
-                case 9 -> secretMenu();
+            switch (scanner.nextLine()) {
+                case "1" -> enterNumberOfStepsPerDay();
+                case "2" -> statistics();
+                case "3" -> setTargetSteps();
+                case "0" -> work = false;
+                case "9" -> secretMenu();
                 default -> System.out.println("\033[96mПостарайтесь попасть в клавиши 0-3\033[0m");
             }
         }
@@ -27,20 +32,20 @@ public class StepTracker {
     }
 
     private static void printMainMenu() {
-        System.out.println("""
+        System.out.println("\n" + """
                 Главное меню
                 1. Ввести количество шагов за определённый день;
                 2. Напечатать статистику за определённый месяц;
                 3. Изменить цель по количеству шагов в день;
-                
-                
+                                
+                                
                 9. Секретное меню.
                 0. Выйти из приложения.""");
         System.out.println();
     }
 
 
-    public void enterNumberOfStepsPerDay() {
+    private void enterNumberOfStepsPerDay() {
         while (true) {
             System.out.println("За какой месяц будем вносить информацию? (1-12, 0 для выхода)");
             int month = scanner.nextInt();
@@ -66,7 +71,7 @@ public class StepTracker {
         }
     }
 
-    public void statistics() {
+    private void statistics() {
 
         int month;
         while (true) {
@@ -97,11 +102,11 @@ public class StepTracker {
                     break;
                 case 4:
                     month = selectMonth();
-                    System.out.println("\033[96mВ .... месяце (потом поправлю на название месяца) Вы прошли " + new Converter().converterDistance(countSteps(month)) / 1000 + " километров или около того\033[0m");
+                    System.out.println("\033[96mВ .... месяце (потом поправлю на название месяца) Вы прошли " + Converter.converterDistance(countSteps(month)) / 1000 + " километров или около того\033[0m");
                     break;
                 case 5:
                     month = selectMonth();
-                    System.out.println("\033[96mВ ..... месяце Вы сожгли " + new Converter().converterCalories(countSteps(month)) + " килокалорий. Что явно маловато.\uD83E\uDD14\033[0m");
+                    System.out.println("\033[96mВ ..... месяце Вы сожгли " + Converter.converterCalories(countSteps(month)) + " килокалорий. Что явно маловато.\uD83E\uDD14\033[0m");
                     break;
                 case 6:
                     month = selectMonth();
@@ -115,7 +120,7 @@ public class StepTracker {
                             }
                         }
                     }
-                    System.out.println("\033[96mЛучшая серия (количество дней подряд больше целевого количества шагов - "+targetSteps+") - " + countDaysMax + "\033[0m");
+                    System.out.println("\033[96mЛучшая серия (количество дней подряд больше целевого количества шагов - " + targetSteps + ") - " + countDaysMax + "\033[0m");
                     break;
                 case 0:
                     return;
@@ -125,10 +130,8 @@ public class StepTracker {
         }
     }
 
-    public void printMenustatistics() {
-        System.out.println("""
-                
-                
+    private void printMenustatistics() {
+        System.out.println("\n" + """
                 Вывод статистики
                 1. Количество пройденных шагов по дням;
                 2. Максимальное количество шагов в месяце;
@@ -139,12 +142,12 @@ public class StepTracker {
                 0. Выход в предыдущее меню.""");
     }
 
-    public int selectMonth() {
+    private int selectMonth() {
         System.out.println("Выберите месяц для анализа: (1-12)");
         return (scanner.nextInt() - 1);
     }
 
-    public int countSteps(int month) {
+    private int countSteps(int month) {
         int countSteps = 0;
         for (int i = 0; i < monthToData[month].stepsByDays.length; i++) {
             countSteps += monthToData[month].stepsByDays[i];
@@ -152,10 +155,9 @@ public class StepTracker {
         return countSteps;
     }
 
-    public void setTargetSteps() {
+    private void setTargetSteps() {
         while (true) {
-            System.out.println("""
-
+            System.out.println("\n" + """
                     1. Показать текущее целевое количество шагов;
                     2. Сменить целевое количество шагов;
                     0. Выход из меню.""");
@@ -180,26 +182,25 @@ public class StepTracker {
         }
     }
 
-    public void secretMenu() {
+    private void secretMenu() {
         while (true) {
-            System.out.println("""
-
+            System.out.println("\n" + """
                     1. Заполнить целый год случайными данными;
                     2. Заполнить месяц случайными данными;
                     3. Очистить историю ходьбы;
                     0. Выход в обычное меню.""");
 
-            switch (scanner.nextInt()) {
-                case 1:
+            switch (scanner.nextLine()) {
+                case "1":
                     fillYearRandomSteps();
                     break;
-                case 2:
+                case "2":
                     fillMonthRandomSteps();
                     break;
-                case 3:
+                case "3":
                     clearAllData();
                     break;
-                case 0:
+                case "0":
                     return;
                 default:
                     System.out.println("Введите цифру 0-3");
@@ -208,8 +209,7 @@ public class StepTracker {
     }
 
 
-    public void fillYearRandomSteps() {
-        Random random = new Random();
+    private void fillYearRandomSteps() {
         for (MonthData monthToDatum : monthToData) {
             for (int j = 0; j < monthToData[0].stepsByDays.length; j++) {
                 monthToDatum.stepsByDays[j] = random.nextInt(targetSteps / 2, (int) (targetSteps * 1.5));
@@ -223,10 +223,9 @@ public class StepTracker {
         }
     }
 
-    public void fillMonthRandomSteps() {
-        Random random = new Random();
+    private void fillMonthRandomSteps() {
         System.out.println("Какой месяц будем заполнять? (1-12)");
-        int num = scanner.nextInt();
+        int num = Integer.parseInt(scanner.nextLine());
         if (num < 1 || num > 12) {
             System.out.println("Нет такого месяца, извините.");
         } else {
@@ -236,10 +235,10 @@ public class StepTracker {
         }
     }
 
-    public void clearAllData() {
+    private void clearAllData() {
         System.out.println("\033[95mСейчас все данные о шагах будут обнулены. " +
                 "Если уверены - нажмите цифру 1\033[0m");
-        if (scanner.nextInt() == 1) {
+        if (Integer.parseInt(scanner.nextLine()) == 1) {
             for (MonthData monthToDatum : monthToData) {
                 for (int j = 0; j < monthToData[0].stepsByDays.length; j++) {
                     monthToDatum.stepsByDays[j] = 0;
@@ -251,8 +250,3 @@ public class StepTracker {
         System.out.println("\033[95mЧисто, начинай сначала.\033[0m");
     }
 }
-
-class MonthData {
-    int[] stepsByDays = new int[30];
-}
-
