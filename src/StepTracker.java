@@ -3,12 +3,12 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class StepTracker {
+    private static final Scanner SCANNER = new Scanner(System.in);
+    private static final Random RANDOM = new Random();
     private static int targetSteps = 10_000;
-    private static Scanner scanner = new Scanner(System.in);
-    private static Random random = new Random();
-    private MonthData[] monthToData = new MonthData[12];
+    private final MonthData[] monthToData = new MonthData[12];
 
-    class MonthData {
+    static class MonthData {
         int[] stepsByDays = new int[30];
     }
 
@@ -19,7 +19,7 @@ public class StepTracker {
         }
         while (work) {
             printMainMenu();
-            switch (scanner.nextLine()) {
+            switch (SCANNER.nextLine()) {
                 case "1" -> enterNumberOfStepsPerDay();
                 case "2" -> statistics();
                 case "3" -> setTargetSteps();
@@ -38,7 +38,6 @@ public class StepTracker {
                 2. Напечатать статистику за определённый месяц;
                 3. Изменить цель по количеству шагов в день;
                                 
-                                
                 9. Секретное меню.
                 0. Выйти из приложения.""");
         System.out.println();
@@ -48,13 +47,13 @@ public class StepTracker {
     private void enterNumberOfStepsPerDay() {
         while (true) {
             System.out.println("За какой месяц будем вносить информацию? (1-12, 0 для выхода)");
-            int month = scanner.nextInt();
-            if (month >= 1 && month < 13) {
+            int month = SCANNER.nextInt();
+            if (month >= 1 && month <= 12) {
                 System.out.println("За какой день будем вносить информацию?(1-30)");
-                int day = scanner.nextInt();
-                if (day > 0 && day <= 30) {
+                int day = SCANNER.nextInt();
+                if (day >= 1 && day <= 30) {
                     System.out.println("Сколько шагов запишем " + day + "." + month + ".2023г?");
-                    int steps = scanner.nextInt();
+                    int steps = SCANNER.nextInt();
                     if (steps > 0) {
                         monthToData[month - 1].stepsByDays[day - 1] = steps;
                     } else {
@@ -75,8 +74,8 @@ public class StepTracker {
 
         int month;
         while (true) {
-            printMenustatistics();
-            switch (scanner.nextInt()) {
+            printMenuStatistics();
+            switch (SCANNER.nextInt()) {
                 case 1:
                     month = selectMonth();
                     for (int i = 0; i < monthToData[month].stepsByDays.length; i++) {
@@ -130,7 +129,7 @@ public class StepTracker {
         }
     }
 
-    private void printMenustatistics() {
+    private void printMenuStatistics() {
         System.out.println("\n" + """
                 Вывод статистики
                 1. Количество пройденных шагов по дням;
@@ -144,7 +143,7 @@ public class StepTracker {
 
     private int selectMonth() {
         System.out.println("Выберите месяц для анализа: (1-12)");
-        return (scanner.nextInt() - 1);
+        return (SCANNER.nextInt() - 1);
     }
 
     private int countSteps(int month) {
@@ -161,13 +160,13 @@ public class StepTracker {
                     1. Показать текущее целевое количество шагов;
                     2. Сменить целевое количество шагов;
                     0. Выход из меню.""");
-            switch (scanner.nextInt()) {
+            switch (SCANNER.nextInt()) {
                 case 1:
                     System.out.println("\033[96mСейчас нужно пройти " + targetSteps + " шагов в день.\033[0m");
                     break;
                 case 2:
                     System.out.println("Введите новое значение цели шагов в день :\033[0m");
-                    int tmp = scanner.nextInt();
+                    int tmp = SCANNER.nextInt();
                     if (tmp > 0) {
                         targetSteps = tmp;
                     } else {
@@ -189,8 +188,7 @@ public class StepTracker {
                     2. Заполнить месяц случайными данными;
                     3. Очистить историю ходьбы;
                     0. Выход в обычное меню.""");
-
-            switch (scanner.nextLine()) {
+            switch (SCANNER.nextLine()) {
                 case "1":
                     fillYearRandomSteps();
                     break;
@@ -212,7 +210,7 @@ public class StepTracker {
     private void fillYearRandomSteps() {
         for (MonthData monthToDatum : monthToData) {
             for (int j = 0; j < monthToData[0].stepsByDays.length; j++) {
-                monthToDatum.stepsByDays[j] = random.nextInt(targetSteps / 2, (int) (targetSteps * 1.5));
+                monthToDatum.stepsByDays[j] = RANDOM.nextInt(targetSteps / 2, (int) (targetSteps * 1.5));
             }
             System.out.print("##");
             try {
@@ -225,12 +223,12 @@ public class StepTracker {
 
     private void fillMonthRandomSteps() {
         System.out.println("Какой месяц будем заполнять? (1-12)");
-        int num = Integer.parseInt(scanner.nextLine());
+        int num = Integer.parseInt(SCANNER.nextLine());
         if (num < 1 || num > 12) {
             System.out.println("Нет такого месяца, извините.");
         } else {
             for (int i = 0; i < monthToData[num - 1].stepsByDays.length; i++) {
-                monthToData[num - 1].stepsByDays[i] = random.nextInt(5000, 12000);
+                monthToData[num - 1].stepsByDays[i] = RANDOM.nextInt(5000, 12000);
             }
         }
     }
@@ -238,7 +236,7 @@ public class StepTracker {
     private void clearAllData() {
         System.out.println("\033[95mСейчас все данные о шагах будут обнулены. " +
                 "Если уверены - нажмите цифру 1\033[0m");
-        if (Integer.parseInt(scanner.nextLine()) == 1) {
+        if (Integer.parseInt(SCANNER.nextLine()) == 1) {
             for (MonthData monthToDatum : monthToData) {
                 for (int j = 0; j < monthToData[0].stepsByDays.length; j++) {
                     monthToDatum.stepsByDays[j] = 0;
